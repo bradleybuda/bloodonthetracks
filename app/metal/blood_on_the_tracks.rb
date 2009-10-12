@@ -5,7 +5,9 @@ class BloodOnTheTracks
   def self.call(env)
     if env["PATH_INFO"] =~ %r{^/blood_on_the_tracks/(\d+)$}
       request_id = $1
-      metadata = BOTT::TrackRequests.requests[request_id] || {}
+      metadata = BOTT::RequestState.instance.get_metadata(request_id)
+      require 'pp'
+      STDERR.puts metadata.pretty_inspect
       
       [
        200,
