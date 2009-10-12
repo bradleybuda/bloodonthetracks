@@ -1,0 +1,2 @@
+content blood_on_the_tracks chrome/content/blood_on_the_tracks/ xpcnativewrappers=no
+overlay chrome://firebug/content/firebugOverlay.xul         chrome://blood_on_the_tracks/content/blood_on_the_tracks.xul
