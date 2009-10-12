@@ -49,11 +49,15 @@ FBL.ns(function() { with (FBL) {
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url, false);
       xhr.send();
-      var result = JSON.parse(xhr.responseText);
+      var metadata = JSON.parse(xhr.responseText);
 
-      // TODO show nothing if undefined
-      // TODO should we be pulling this from Firefox, or from Firebug?
-      this.metadata = result;
+      Firebug.Console.log(metadata);
+
+      // extract instance var keys
+      var instance_variables = []
+      for (var ivar_name in metadata.instance_variables) {
+        instance_variables.push({name: ivar_name, value: metadata.instance_variables[ivar_name]});
+      }
 
       var metadataTemplate = domplate({
         tag:
@@ -68,16 +72,16 @@ FBL.ns(function() { with (FBL) {
             // table on RHS
             DIV({style: 'position: absolute; right: 0px; top: 0px; height: 100%; width: 30%'},
                 TABLE({border: '1px', width: '100%'},
-                      TR(TD({width: '20%'},"Controller"), TD(this.metadata.controller)),
-                      TR(TD({width: '20%'},"Action")    , TD(this.metadata.action)),
+                      TR(TD({width: '20%'},"Controller"), TD(metadata.controller)),
+                      TR(TD({width: '20%'},"Action")    , TD(metadata.action)),
                       TR(TD({colspan: "2"}, "Instance Variables")),
                       FOR("instance_var", "$instance_vars",
-                          TR(TD({width: '20%'},"$instance_var"), TD("???"))))))
+                          TR(TD({width: '20%'},"$instance_var.name"), TD("$instance_var.value"))))))
 
       }); 
 
       var parentNode = panel.panelNode;
-      var rootTemplateElement = metadataTemplate.tag.replace({instance_vars: this.metadata.instance_variables}, parentNode, metadataTemplate);
+      var rootTemplateElement = metadataTemplate.tag.replace({instance_vars: instance_variables}, parentNode, metadataTemplate);
     }
   });
 

@@ -20,10 +20,10 @@ config.action_mailer.raise_delivery_errors = false
 config.middleware.insert_after(ActionController::Failsafe, BOTT::TrackRequests)
 
 # Spy on all controller actions
+require 'pp'
 module ::ActionController
   class Dispatcher
     BOTT_DEFAULT_INSTANCE_VARS = ["@_current_render", "@template", "@assigns_added", "@view_paths", "@_first_render", "@output_buffer", "@assigns", "@helpers", "@cached_content_for_layout", "@template_format", "@controller", "@content_for_layout", "@_request"]
-
     
     def bott_after_request
       STDERR.puts "intercepting request"
@@ -31,7 +31,11 @@ module ::ActionController
       original_request = @env['action_controller.rescue.request']
       original_response = @env['action_controller.rescue.response']
       view = original_response.template
-      instance_vars = view.instance_variables - BOTT_DEFAULT_INSTANCE_VARS
+      instance_vars = {}
+      
+      (view.instance_variables - BOTT_DEFAULT_INSTANCE_VARS).each do |ivar_name|
+        instance_vars[ivar_name] = view.instance_variable_get(ivar_name).pretty_inspect
+      end
       
       state = BOTT::RequestState.instance
       
