@@ -5,7 +5,13 @@ class BloodOnTheTracks
   def self.call(env)
     if env["PATH_INFO"] =~ %r{^/blood_on_the_tracks/(\d+)$}
       request_id = $1
-      [200, {"Content-Type" => "text/html"}, ["Hello, Request #{request_id}!"]]
+      response = {'request_id' => request_id}
+      
+      [
+       200,
+       {"Content-Type" => "text/html"},
+       [response.to_json],
+      ]
     else
       [404, {"Content-Type" => "text/html"}, ["Not Found"]]
     end

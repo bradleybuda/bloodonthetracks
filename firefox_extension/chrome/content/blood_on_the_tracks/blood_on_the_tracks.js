@@ -41,9 +41,20 @@ FBL.ns(function() { with (FBL) {
       // this is a Rails app running the BOTT plugin
       var requestId = httpRequestObserver.lastRequestId;
 
+      // TODO should probably not be happening in showPanel...
+      // fetch some information on the request from the server
+      // TODO un-hardcode
+      // TODO use XHR?
+      var url = 'http://localhost:3000/blood_on_the_tracks/' + requestId;
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, false);
+      xhr.send();
+      var result = JSON.parse(xhr.responseText); // sexy
+      Firebug.Console.log(result);
+
       // TODO show nothing if undefined
       // TODO should we be pulling this from Firefox, or from Firebug?
-      FirebugContext.getPanel("BloodOnTheTracks").printLine(requestId);
+      FirebugContext.getPanel("BloodOnTheTracks").printLine("Loading Request Info...");
     }
   });
 
