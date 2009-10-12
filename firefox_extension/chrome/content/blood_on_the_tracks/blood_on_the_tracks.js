@@ -50,25 +50,34 @@ FBL.ns(function() { with (FBL) {
       xhr.open("GET", url, false);
       xhr.send();
       var result = JSON.parse(xhr.responseText);
-        //Firebug.Console.log(result);
 
       // TODO show nothing if undefined
       // TODO should we be pulling this from Firefox, or from Firebug?
       this.metadata = result;
 
       var metadataTemplate = domplate({
-        foo:
-        DIV({style: 'position: absolute; right: 0px; top: 0px; height: 100%; width: 30%'},
-            TABLE({border: '1px', width: '100%'},
-                  TR(TD("Request ID"), TD(Firebug.BloodOnTheTracks.metadata.request_id)),
-                  TR(TD("Controller"), TD(Firebug.BloodOnTheTracks.metadata.controller)),
-                  TR(TD("Action")    , TD(Firebug.BloodOnTheTracks.metadata.action))
-                 )
-           )
-      });
+        tag:
+        DIV({style: 'width: 100%; height: 100%'},
+            // console on LHS
+            DIV({style: 'position: absolute; left: 0px; top: 0px; height: 99%; width: 70%'},
+                DIV({style: 'height: 85%; width: 100%; border: 1px solid black;'},
+                    "Welcome to the Rails Console"),
+                DIV({style: 'height: 14%; width: 100%; border: 1px solid black;'},
+                    ">>")),
+
+            // table on RHS
+            DIV({style: 'position: absolute; right: 0px; top: 0px; height: 100%; width: 30%'},
+                TABLE({border: '1px', width: '100%'},
+                      TR(TD({width: '20%'},"Controller"), TD(this.metadata.controller)),
+                      TR(TD({width: '20%'},"Action")    , TD(this.metadata.action)),
+                      TR(TD({colspan: "2"}, "Instance Variables")),
+                      FOR("instance_var", "$instance_vars",
+                          TR(TD({width: '20%'},"$instance_var"), TD("???"))))))
+
+      }); 
 
       var parentNode = panel.panelNode;
-      var rootTemplateElement = metadataTemplate.foo.append({}, parentNode, metadataTemplate);
+      var rootTemplateElement = metadataTemplate.tag.replace({instance_vars: this.metadata.instance_variables}, parentNode, metadataTemplate);
     }
   });
 
