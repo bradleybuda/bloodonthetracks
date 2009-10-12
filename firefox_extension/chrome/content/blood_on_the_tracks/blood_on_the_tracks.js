@@ -49,12 +49,14 @@ FBL.ns(function() { with (FBL) {
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url, false);
       xhr.send();
-      var result = JSON.parse(xhr.responseText); // sexy
+      var result = JSON.parse(xhr.responseText);
       Firebug.Console.log(result);
 
       // TODO show nothing if undefined
       // TODO should we be pulling this from Firefox, or from Firebug?
-      FirebugContext.getPanel("BloodOnTheTracks").printLine("Loading Request Info...");
+      FirebugContext.getPanel("BloodOnTheTracks").printLine("Request ID = " + result.request_id);
+      FirebugContext.getPanel("BloodOnTheTracks").printLine("Controller = " + result.controller);
+      FirebugContext.getPanel("BloodOnTheTracks").printLine("Action = " + result.action);
     }
   });
 
