@@ -15,3 +15,6 @@ config.action_controller.perform_caching             = false
 
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
+
+# Hook up blood_on_the_tracks
+config.middleware.insert_after(ActionController::Failsafe, BOTT::TrackRequests)
