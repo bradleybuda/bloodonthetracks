@@ -50,13 +50,25 @@ FBL.ns(function() { with (FBL) {
       xhr.open("GET", url, false);
       xhr.send();
       var result = JSON.parse(xhr.responseText);
-      Firebug.Console.log(result);
+        //Firebug.Console.log(result);
 
       // TODO show nothing if undefined
       // TODO should we be pulling this from Firefox, or from Firebug?
-      FirebugContext.getPanel("BloodOnTheTracks").printLine("Request ID = " + result.request_id);
-      FirebugContext.getPanel("BloodOnTheTracks").printLine("Controller = " + result.controller);
-      FirebugContext.getPanel("BloodOnTheTracks").printLine("Action = " + result.action);
+      this.metadata = result;
+
+      var metadataTemplate = domplate({
+        foo:
+        DIV({style: 'position: absolute; right: 0px; top: 0px; height: 100%; width: 30%'},
+            TABLE({border: '1px', width: '100%'},
+                  TR(TD("Request ID"), TD(Firebug.BloodOnTheTracks.metadata.request_id)),
+                  TR(TD("Controller"), TD(Firebug.BloodOnTheTracks.metadata.controller)),
+                  TR(TD("Action")    , TD(Firebug.BloodOnTheTracks.metadata.action))
+                 )
+           )
+      });
+
+      var parentNode = panel.panelNode;
+      var rootTemplateElement = metadataTemplate.foo.append({}, parentNode, metadataTemplate);
     }
   });
 
@@ -65,12 +77,10 @@ FBL.ns(function() { with (FBL) {
   BloodOnTheTracksPanel.prototype = extend(Firebug.Panel, {
     name: "BloodOnTheTracks",
     title: "Rails",
-    searchable: false,
-    editable: false,
-    printLine: function(message) {
-      var elt = this.document.createElement("p");
-      elt.innerHTML = message;
-      this.panelNode.appendChild(elt);
+    initialize: function () {
+      Firebug.Panel.initialize.apply(this, arguments);
+    },
+    show: function() {
     }
   });
 
