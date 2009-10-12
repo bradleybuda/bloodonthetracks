@@ -9,6 +9,8 @@ class TrackRequests
   end
 
   def call(env)
+    # note that this code will be called for BOTT API requests too....
+    
     @@request_id = rand(2 ** 64).to_s
     
     STDERR.puts "BOTT::TrackRequests call, request_id = #{@@request_id}"
