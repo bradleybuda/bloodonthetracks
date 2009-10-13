@@ -13,11 +13,18 @@ class BloodOnTheTracks
                  when 'metadata'
                    BOTT::RequestState.instance.get_metadata(request_id)
                  when 'eval'
-                   text = env['rack.input'].read
-                   STDERR.puts(text)
-                   request = JSON.parse(text)
+                   request = JSON.parse(env['rack.input'].read)
                    command = request['command']
-                   {'result' => command}
+                   
+                   # eval this command in the context of the controller's instance variables
+                   instance_vars = BOTT::RequestState.instance.get_metadata(request_id)['instance_variables']
+                   o = Object.new
+                   instance_vars.each do |name, value|
+                     o.instance_variable_set(name, value)
+                   end
+                   
+                   result = o.instance_eval(command)
+                   {'result' => result.pretty_inspect}
                  end
 
       [200, {"Content-Type" => "application/json"}, [response.to_json]]
