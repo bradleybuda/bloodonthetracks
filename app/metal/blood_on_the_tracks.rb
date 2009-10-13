@@ -3,15 +3,24 @@ require(File.dirname(__FILE__) + "/../../config/environment") unless defined?(Ra
 
 class BloodOnTheTracks
   def self.call(env)
-    if env["PATH_INFO"] =~ %r{^/blood_on_the_tracks/(\d+)$}
+    if env["PATH_INFO"] =~ %r{^/blood_on_the_tracks/(\d+)/(.+)$}
       request_id = $1
-      metadata = BOTT::RequestState.instance.get_metadata(request_id)
-      
-      [
-       200,
-       {"Content-Type" => "text/html"},
-       [metadata.to_json],
-      ]
+      method = $2
+
+      STDERR.puts "calling #{method} on request #{request_id}"
+
+      response = case method
+                 when 'metadata'
+                   BOTT::RequestState.instance.get_metadata(request_id)
+                 when 'eval'
+                   text = env['rack.input'].read
+                   STDERR.puts(text)
+                   request = JSON.parse(text)
+                   command = request['command']
+                   {'result' => command}
+                 end
+
+      [200, {"Content-Type" => "application/json"}, [response.to_json]]
     else
       [404, {"Content-Type" => "text/html"}, ["Not Found"]]
     end

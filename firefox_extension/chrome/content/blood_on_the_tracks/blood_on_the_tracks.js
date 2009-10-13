@@ -45,18 +45,16 @@ FBL.ns(function() { with (FBL) {
       // fetch some information on the request from the server
       // TODO un-hardcode
       // TODO use XHR?
-      var url = 'http://localhost:3000/blood_on_the_tracks/' + requestId;
+      var url = 'http://localhost:3000/blood_on_the_tracks/' + requestId + '/metadata';
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url, false);
       xhr.send();
       var metadata = JSON.parse(xhr.responseText);
 
-      Firebug.Console.log(metadata);
-
       // extract instance var keys
       var instance_variables = []
-      for (var ivar_name in metadata.instance_variables) {
-        instance_variables.push({name: ivar_name, value: metadata.instance_variables[ivar_name]});
+      for (var ivar_name in metadata.instance_variables_pretty) {
+        instance_variables.push({name: ivar_name, value: metadata.instance_variables_pretty[ivar_name]});
       }
 
       var metadataTemplate = domplate({
@@ -64,10 +62,9 @@ FBL.ns(function() { with (FBL) {
         DIV({style: 'width: 100%; height: 100%'},
             // console on LHS
             DIV({style: 'position: absolute; left: 0px; top: 0px; height: 99%; width: 70%'},
-                DIV({style: 'height: 85%; width: 100%; border: 1px solid black;'},
+                DIV({style: 'height: 90%; width: 100%; border: 1px solid black;'},
                     "Welcome to the Rails Console"),
-                DIV({style: 'height: 14%; width: 100%; border: 1px solid black;'},
-                    ">>")),
+                INPUT({id: 'railsCommand', onkeypress: "$onKeyPress", type: 'text', style: "position: absolute; left: 0px; bottom: 0px; width: 99%;"})),
 
             // table on RHS
             DIV({style: 'position: absolute; right: 0px; top: 0px; height: 100%; width: 30%'},
@@ -76,8 +73,19 @@ FBL.ns(function() { with (FBL) {
                       TR(TD({width: '20%'},"Action")    , TD(metadata.action)),
                       TR(TD({colspan: "2"}, "Instance Variables")),
                       FOR("instance_var", "$instance_vars",
-                          TR(TD({width: '20%'},"$instance_var.name"), TD("$instance_var.value"))))))
-
+                          TR(TD({width: '20%'},"$instance_var.name"), TD("$instance_var.value")))))),
+        onKeyPress: function(event){
+          if (event.keyCode == 13) { // enter key
+            var url = 'http://localhost:3000/blood_on_the_tracks/' + requestId + '/eval';
+            var xhr = new XMLHttpRequest();
+            Firebug.Console.log(panel.document.getElementById('railsCommand'));
+            var commandText = panel.document.getElementById('railsCommand').value;
+            var request = JSON.stringify({command: commandText})
+            xhr.open("POST", url, false);
+            xhr.send(request);
+            var response = JSON.parse(xhr.responseText);
+          }
+        }
       }); 
 
       var parentNode = panel.panelNode;

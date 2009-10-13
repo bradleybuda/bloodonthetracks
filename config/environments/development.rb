@@ -31,10 +31,12 @@ module ::ActionController
       original_request = @env['action_controller.rescue.request']
       original_response = @env['action_controller.rescue.response']
       view = original_response.template
-      instance_vars = {}
+      instance_variables = {}
+      instance_variables_pretty = {}
       
       (view.instance_variables - BOTT_DEFAULT_INSTANCE_VARS).each do |ivar_name|
-        instance_vars[ivar_name] = view.instance_variable_get(ivar_name).pretty_inspect
+        instance_variables[ivar_name] = view.instance_variable_get(ivar_name).dup
+        instance_variables_pretty[ivar_name] = view.instance_variable_get(ivar_name).pretty_inspect
       end
       
       state = BOTT::RequestState.instance
@@ -42,7 +44,8 @@ module ::ActionController
       state.add_metadata 'controller', original_request.params[:controller]
       state.add_metadata 'action', original_request.params[:action]
       state.add_metadata 'params', original_request.params
-      state.add_metadata 'instance_variables', instance_vars
+      state.add_metadata 'instance_variables', instance_variables
+      state.add_metadata 'instance_variables_pretty', instance_variables_pretty
     end
     
     after_dispatch :bott_after_request
