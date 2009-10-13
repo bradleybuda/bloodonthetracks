@@ -24,7 +24,8 @@ class BloodOnTheTracks
                    end
                    
                    result = o.instance_eval(command)
-                   {'result' => result.pretty_inspect}
+                   
+                   {'result' => result.pretty_inspect.chomp}
                  end
 
       [200, {"Content-Type" => "application/json"}, [response.to_json]]

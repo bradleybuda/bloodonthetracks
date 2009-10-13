@@ -1,5 +1,9 @@
 FBL.ns(function() { with (FBL) {
 
+String.prototype.htmlEntities = function () {
+   return this.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+};
+
   var httpRequestObserver = {
     observe: function(subject, topic, data) {
       if (topic == "http-on-examine-response") {
@@ -62,8 +66,8 @@ FBL.ns(function() { with (FBL) {
         DIV({style: 'width: 100%; height: 100%'},
             // console on LHS
             DIV({style: 'position: absolute; left: 0px; top: 0px; height: 99%; width: 70%'},
-                DIV({style: 'height: 90%; width: 100%; border: 1px solid black;'},
-                    "Welcome to the Rails Console"),
+                DIV({id: 'railsCommandLog', style: 'height: 90%; width: 100%; border: 1px solid black;'},
+                    SPAN("Welcome to the Rails Console"), BR()),
                 INPUT({id: 'railsCommand', onkeypress: "$onKeyPress", type: 'text', style: "position: absolute; left: 0px; bottom: 0px; width: 99%;"})),
 
             // table on RHS
@@ -78,12 +82,13 @@ FBL.ns(function() { with (FBL) {
           if (event.keyCode == 13) { // enter key
             var url = 'http://localhost:3000/blood_on_the_tracks/' + requestId + '/eval';
             var xhr = new XMLHttpRequest();
-            Firebug.Console.log(panel.document.getElementById('railsCommand'));
             var commandText = panel.document.getElementById('railsCommand').value;
             var request = JSON.stringify({command: commandText})
             xhr.open("POST", url, false);
             xhr.send(request);
             var response = JSON.parse(xhr.responseText);
+            var resultText = response.result;
+            panel.document.getElementById('railsCommandLog').innerHTML += "<span>" + resultText.htmlEntities() + "</span><br/>";
           }
         }
       }); 
