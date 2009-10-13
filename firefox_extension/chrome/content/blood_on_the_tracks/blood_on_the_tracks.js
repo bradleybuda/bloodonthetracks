@@ -66,8 +66,8 @@ String.prototype.htmlEntities = function () {
         DIV({style: 'width: 100%; height: 100%'},
             // console on LHS
             DIV({style: 'position: absolute; left: 0px; top: 0px; height: 99%; width: 70%'},
-                DIV({id: 'railsCommandLog', style: 'height: 90%; width: 100%; border: 1px solid black;'},
-                    SPAN("Welcome to the Rails Console"), BR()),
+                DIV({id: 'railsCommandLog', style: 'height: 90%; width: 100%; border: 1px solid black; padding: 3px;'},
+                    SPAN(STRONG("Welcome to the Rails Console")), BR()),
                 INPUT({id: 'railsCommand', onkeypress: "$onKeyPress", type: 'text', style: "position: absolute; left: 0px; bottom: 0px; width: 99%;"})),
 
             // table on RHS
@@ -80,15 +80,28 @@ String.prototype.htmlEntities = function () {
                           TR(TD({width: '20%'},"$instance_var.name"), TD("$instance_var.value")))))),
         onKeyPress: function(event){
           if (event.keyCode == 13) { // enter key
+
+            // TODO up arrow!
+
+            // write command to log
+            var commandText = panel.document.getElementById('railsCommand').value;
+            panel.document.getElementById('railsCommandLog').innerHTML += "<span><strong>" + commandText.htmlEntities() + "</strong></span><br/>";
+            panel.document.getElementById('railsCommand').value = '';
+
+            // make HTTP request
             var url = 'http://localhost:3000/blood_on_the_tracks/' + requestId + '/eval';
             var xhr = new XMLHttpRequest();
-            var commandText = panel.document.getElementById('railsCommand').value;
             var request = JSON.stringify({command: commandText})
             xhr.open("POST", url, false);
             xhr.send(request);
+
+            // handle response
             var response = JSON.parse(xhr.responseText);
             var resultText = response.result;
-            panel.document.getElementById('railsCommandLog').innerHTML += "<span>" + resultText.htmlEntities() + "</span><br/>";
+            if (response.error)
+              panel.document.getElementById('railsCommandLog').innerHTML += "<span style='color:red;'>" + resultText.htmlEntities() + "</span><br/>";
+            else
+              panel.document.getElementById('railsCommandLog').innerHTML += "<span>" + resultText.htmlEntities() + "</span><br/>";
           }
         }
       }); 
