@@ -1,0 +1,2 @@
+STDERR.puts "BloodOnTheTracks: init"
+
