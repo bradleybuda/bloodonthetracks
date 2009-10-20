@@ -8,9 +8,9 @@ class Server
   def call(env)
     case env["PATH_INFO"]
     when %r{^/blood_on_the_tracks/(\d+)/(.+)$}
-      handle_api_call(env, $1, $2)
+      api_call(env, $1, $2)
     else
-      handle_instrument_request(env)
+      instrument_request(env)
     end
   end
   
