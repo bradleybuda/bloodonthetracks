@@ -1,42 +1,63 @@
 module BloodOnTheTracks
 class Server
-  def self.call(env)
-    if env["PATH_INFO"] =~ %r{^/blood_on_the_tracks/(\d+)/(.+)$}
-      request_id = $1
-      method = $2
-      
-      metadata = BloodOnTheTracks::RequestState.instance.get_metadata(request_id)
-
-      response = case method
-                 when 'metadata'
-                   metadata
-                 when 'eval'
-                   request = JSON.parse(env['rack.input'].read)
-                   command = request['command']
-                   
-                   # eval this command in the context of the controller's instance variables
-                   instance_vars = metadata['instance_variables']
-
-                   begin
-                     o = Object.new
-                     instance_vars.each { |name, value| o.instance_variable_set(name, value) }
-
-                     # if the user defines any variables, unfortunately, they get lost here
-                     # we could persist +o+ to keep them around...
-                   
-                     result = o.instance_eval(command)
-                   
-                     {'result' => result.pretty_inspect.chomp, 'error' => false}
-                   rescue => e
-                     {'result' => e.to_s, 'error' => true}
-                   end
-                 end
-
-      [200, {"Content-Type" => "application/json"}, [response.to_json]]
+    
+  def initialize(app)
+    @app = app
+  end
+  
+  def call(env)
+    case env["PATH_INFO"]
+    when %r{^/blood_on_the_tracks/(\d+)/(.+)$}
+      handle_api_call(env, $1, $2)
     else
-      [404, {"Content-Type" => "text/html"}, ["Not Found"]]
+      handle_instrument_request(env)
     end
   end
+  
+  private
+
+  def instrument_request(env)
+    # generate a new request id; other hooks use this to instrument the request
+    RequestState.instance.new_request!
+
+    @status, @headers, @response = @app.call(env)
+    @headers['X-BOTT-Request-Id'] = RequestState.instance.current_request_id
+    
+    [@status, @headers, @response]
+  end
+  
+  def api_call(env, request_id, method)
+    metadata = BloodOnTheTracks::RequestState.instance.get_metadata(request_id)
+
+    response = case method
+               when 'metadata'
+                 metadata
+               when 'eval'
+                 request = JSON.parse(env['rack.input'].read)
+                 command = request['command']
+                   
+                 # eval this command in the context of the controller's instance variables
+                 instance_vars = metadata['instance_variables']
+
+                 begin
+                   o = Object.new
+                   instance_vars.each { |name, value| o.instance_variable_set(name, value) }
+
+                   # if the user defines any variables, unfortunately, they get lost here
+                   # we could persist +o+ to keep them around...
+                   
+                   result = o.instance_eval(command)
+                   
+                   {'result' => result.pretty_inspect.chomp, 'error' => false}
+                 rescue => e
+                   {'result' => e.to_s, 'error' => true}
+                 end
+               end
+    
+    # TODO maybe text/plain for nice debugging?
+    [200, {"Content-Type" => "application/json"}, [response.to_json]]
+  end
+  
 end
 end
 
