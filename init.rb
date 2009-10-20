@@ -1,4 +1,4 @@
-# Initalize the local storage for request info
+require 'pp'
 require 'blood_on_the_tracks/request_state'
 
 # Tell Dispatcher to call our code to track requests
@@ -8,8 +8,6 @@ module ::ActionController
     BOTT_DEFAULT_INSTANCE_VARS = ["@_current_render", "@template", "@assigns_added", "@view_paths", "@_first_render", "@output_buffer", "@assigns", "@helpers", "@cached_content_for_layout", "@template_format", "@controller", "@content_for_layout", "@_request"]
     
     def bott_after_request
-      STDERR.puts "intercepting request"
-      
       original_request = @env['action_controller.rescue.request']
       original_response = @env['action_controller.rescue.response']
       view = original_response.template
