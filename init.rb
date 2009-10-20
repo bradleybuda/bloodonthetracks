@@ -1,5 +1,3 @@
-STDERR.puts "BloodOnTheTracks: init" # TODO remove
-
 # Initalize the local storage for request info
 require 'blood_on_the_tracks/request_state'
 
