@@ -7,7 +7,7 @@ require 'blood_on_the_tracks/request_state'
 # TODO externalize
 module ::ActionController
   class Dispatcher
-    ::BloodOnTheTracks::DEFAULT_INSTANCE_VARS = ["@_current_render", "@template", "@assigns_added", "@view_paths", "@_first_render", "@output_buffer", "@assigns", "@helpers", "@cached_content_for_layout", "@template_format", "@controller", "@content_for_layout", "@_request"]
+    BOTT_DEFAULT_INSTANCE_VARS = ["@_current_render", "@template", "@assigns_added", "@view_paths", "@_first_render", "@output_buffer", "@assigns", "@helpers", "@cached_content_for_layout", "@template_format", "@controller", "@content_for_layout", "@_request"]
     
     def bott_after_request
       STDERR.puts "intercepting request"
@@ -18,12 +18,12 @@ module ::ActionController
       instance_variables = {}
       instance_variables_pretty = {}
       
-      (view.instance_variables - BloodOnTheTracks::DEFAULT_INSTANCE_VARS).each do |ivar_name|
+      (view.instance_variables - BOTT_DEFAULT_INSTANCE_VARS).each do |ivar_name|
         instance_variables[ivar_name] = view.instance_variable_get(ivar_name).dup
         instance_variables_pretty[ivar_name] = view.instance_variable_get(ivar_name).pretty_inspect
       end
       
-      state = BloodOnTheTracks::RequestState.instance
+      state = ::BloodOnTheTracks::RequestState.instance
       
       state.add_metadata 'controller', original_request.params[:controller]
       state.add_metadata 'action', original_request.params[:action]
