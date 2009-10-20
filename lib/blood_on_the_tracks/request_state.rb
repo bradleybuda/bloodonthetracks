@@ -1,6 +1,4 @@
-require 'pp'
-
-module BOTT
+module BloodOnTheTracks
 class RequestState
   include Singleton
   
