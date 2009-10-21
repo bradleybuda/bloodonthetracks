@@ -63,6 +63,6 @@ plentiful.  The big picture TODOs are:
 About
 =====
 
-Created by [Bradley Buda][http://twitter.com/bradleybuda] for
-[TrackSimple][http://tracksimple.com] Hack Day, October 2009.
+Created by [Bradley Buda](http://twitter.com/bradleybuda) for
+[TrackSimple](http://tracksimple.com) Hack Day, October 2009.
 
