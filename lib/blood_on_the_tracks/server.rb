@@ -7,6 +7,8 @@ class Server
   
   def call(env)
     case env["PATH_INFO"]
+    when %r{^/blood_on_the_tracks/install$}
+      install_plugin(env)
     when %r{^/blood_on_the_tracks/(\d+)/(.+)$}
       api_call(env, $1, $2)
     else
@@ -15,7 +17,15 @@ class Server
   end
   
   private
-
+  
+  def install_plugin(env)
+    f = Rack::File.new(RAILS_ROOT)
+    # TODO use __FILE__ to figure out this path
+    f.path = 'vendor/plugins/blood_on_the_tracks/firefox_extension/blood_on_the_tracks.xpi'
+    
+    [200, {"Content-Type" => "application/x-xpinstall"}, f]
+  end
+  
   def instrument_request(env)
     # generate a new request id; other hooks use this to instrument the request
     RequestState.instance.new_request!
