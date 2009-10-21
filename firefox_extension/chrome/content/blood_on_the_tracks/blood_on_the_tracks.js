@@ -9,6 +9,7 @@ String.prototype.htmlEntities = function () {
       if (topic == "http-on-examine-response") {
         var httpChannel = subject.QueryInterface(Components.interfaces.nsIHttpChannel);
         this.lastRequestId = httpChannel.getResponseHeader("X-BOTT-Request-Id");
+        this.server = httpChannel.URI.prePath;
       }
     },
 
@@ -48,7 +49,7 @@ String.prototype.htmlEntities = function () {
       // TODO should probably not be happening in showPanel...
       // fetch some information on the request from the server
       // TODO use XHR?
-      var url = '/blood_on_the_tracks/' + requestId + '/metadata';
+      var url = httpRequestObserver.server + '/blood_on_the_tracks/' + requestId + '/metadata';
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url, false);
       xhr.send();
@@ -88,7 +89,7 @@ String.prototype.htmlEntities = function () {
             panel.document.getElementById('railsCommand').value = '';
 
             // make HTTP request
-            var url = '/blood_on_the_tracks/' + requestId + '/eval';
+            var url = httpRequestObserver.server + '/blood_on_the_tracks/' + requestId + '/eval';
             var xhr = new XMLHttpRequest();
             var request = JSON.stringify({command: commandText})
             xhr.open("POST", url, false);
