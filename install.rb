@@ -11,9 +11,8 @@ Dir.chdir '..'
 
 STDERR.puts
 STDERR.puts <<MSG
-Blood on the Tracks successfully installed
-To install the Firefox extension, visit
-http://localhost:3000/blood_on_the_tracks/install
+Blood on the Tracks successfully installed! To install the Firefox
+extension, visit http://localhost:3000/blood_on_the_tracks/install
 
 For more info, see http://github.com/bradleybuda/bloodonthetracks
 
