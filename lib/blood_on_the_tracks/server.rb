@@ -55,6 +55,7 @@ class Server
                end
     
     # TODO maybe text/plain for nice debugging?
+    STDERR.puts response.pretty_inspect
     [200, {"Content-Type" => "application/json"}, [response.to_json]]
   end
   
