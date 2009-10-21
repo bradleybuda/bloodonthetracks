@@ -49,6 +49,8 @@ Hacking / TODOs
 I'm still working on a list of TODOs, but they are many and
 plentiful.  The big picture TODOs are:
 
+* Allow the plugin to run with reloaded classes in development mode
+  (need to persist objects as JSON or Marshal to handle class reloading)
 * Make the Rails plugin safer, more secure, less memory-leaky, and
   less likely to crash your app.
 * Instrument more things in Rails (views / layouts / templates,
