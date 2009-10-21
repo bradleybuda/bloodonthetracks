@@ -15,7 +15,7 @@ module ::ActionController
       instance_variables_pretty = {}
       
       (view.instance_variables - BOTT_DEFAULT_INSTANCE_VARS).each do |ivar_name|
-        instance_variables[ivar_name] = view.instance_variable_get(ivar_name).dup
+        instance_variables[ivar_name] = view.instance_variable_get(ivar_name).dup rescue nil
         instance_variables_pretty[ivar_name] = view.instance_variable_get(ivar_name).pretty_inspect
       end
       
