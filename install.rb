@@ -1,6 +1,7 @@
 STDERR.puts
 STDERR.puts "Building Firefox Extension..."
 
+Dir.chdir File.dirname(File.expand_path(__FILE__))
 Dir.chdir 'firefox_extension'
 Dir.chdir 'chrome'
 `zip -r blood_on_the_tracks.jar content/*` # TODO also zip skin dir when we have one
