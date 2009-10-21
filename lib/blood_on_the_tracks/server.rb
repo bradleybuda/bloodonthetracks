@@ -21,7 +21,7 @@ class Server
   def install_plugin(env)
     f = Rack::File.new(RAILS_ROOT)
     # TODO use __FILE__ to figure out this path
-    f.path = 'vendor/plugins/blood_on_the_tracks/firefox_extension/blood_on_the_tracks.xpi'
+    f.path = 'vendor/plugins/bloodonthetracks/firefox_extension/blood_on_the_tracks.xpi'
     
     [200, {"Content-Type" => "application/x-xpinstall"}, f]
   end
