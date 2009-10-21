@@ -59,3 +59,10 @@ plentiful.  The big picture TODOs are:
 * Make the Firebug console not suck.
 * Add an API to render a page using modified instance variables.
 * Allow the eval API to keep local variables around in scope.
+
+About
+=====
+
+Created by [Bradley Buda][http://twitter.com/bradleybuda] for
+[TrackSimple][http://tracksimple.com] Hack Day, October 2009.
+
